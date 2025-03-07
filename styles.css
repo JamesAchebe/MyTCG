@@ -35,10 +35,17 @@ body {
 }
 
 .deck {
-    height: 50px;
+    height: 100px;
 }
 
 .card-img {
     width: 75px;  /* Adjust size based on your layout */
     height: auto;
+}
+
+.card-back {
+    width: 75px;  /* or any desired width */
+    height: auto;
+    display: block;
+    margin: 0 auto;
 }
