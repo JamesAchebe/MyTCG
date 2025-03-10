@@ -6,6 +6,7 @@ class Player {
         this.shuffleDeck();
         this.hand = [];
         this.board = [];
+        this.discardPile = [];
         this.updateDeckUI();  // Initial deck count display
     }
 
@@ -97,11 +98,18 @@ class Player {
         boardElement.appendChild(countDiv);
 
     // Append each card image
-        this.board.forEach(card => {
+        this.board.forEach((card, index) => {
             const img = document.createElement('img');
             img.src = card;
             img.alt = 'Card';
             img.className = 'card-img';
+
+                // Debugging: Log index and card info
+            img.addEventListener('click', () => {
+                console.log(`Card clicked: ${card} at index ${index}`);
+                this.discard(index);
+            });
+
             boardElement.appendChild(img);
         });
     }
@@ -137,6 +145,40 @@ class Player {
             deckElement.appendChild(countDiv);
         }
     }
+
+    updateDiscardPileUI() {
+        const pileElement = document.querySelector(`#${this.id} .discard-pile`);
+        pileElement.innerHTML = ''; // Clear existing content
+
+    // Create and append count element
+        const countDiv = document.createElement('div');
+        countDiv.className = 'pile-count';
+        countDiv.textContent = `Discard Pile: ${this.discardPile.length} cards`;
+        pileElement.appendChild(countDiv);
+
+    // Append each card image
+        this.discardPile.forEach(card => {
+            const img = document.createElement('img');
+            img.src = card;
+            img.alt = 'Card';
+            img.className = 'card-img';
+            pileElement.appendChild(img);
+        });
+    }
+
+    discard(cardIndex) {
+        if (this.board.length > 0 && cardIndex >= 0 && cardIndex < this.board.length) {
+            const card = this.board.splice(cardIndex, 1)[0];
+            this.discardPile.push(card);
+
+            console.log(`Discarding card: ${card}`);
+
+            this.updateBoardUI();
+            this.updateDiscardPileUI();
+        } else {
+            console.log(`Invalid card index: ${cardIndex}`);
+        }
+    }
     
     
 }
@@ -146,20 +188,4 @@ class Player {
 const player1 = new Player('player1', '/playing-cards-master/back_light.png');
 const player2 = new Player('player2', '/playing-cards-master/back_dark.png');
 
-// Each player draws 4 cards
-player1.drawCard();
-player1.drawCard();
-player1.drawCard();
-player1.drawCard();
-player2.drawCard();
-player2.drawCard();
-player2.drawCard();
-player2.drawCard();
 
-// Each player plays two card
-player1.playCard(0);
-player1.playCard(0);
-player2.playCard(0);
-player2.playCard(0);
-
-// Now, both players have shuffled decks and should draw different cards
