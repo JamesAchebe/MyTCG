@@ -18,7 +18,7 @@ body {
     background-color: #e2e2e2;
 }
 
-.deck, .hand, .board {
+.deck, .hand, .board, .discard-pile {
     margin: 10px 0;
     padding: 20px;
     border: 1px solid #333;
@@ -27,15 +27,23 @@ body {
 }
 
 .hand {
-    height: 100px;
+    min-height: 100px;
+    height: auto;
 }
 
 .board {
-    height: 200px;
+    min-height: 200px;
+    height: auto;
 }
 
 .deck {
-    height: 100px;
+    min-height: 100px;
+    height: auto;
+}
+
+.discard-pile {
+    min-height: 100px;
+    height: auto;
 }
 
 .card-img {
@@ -49,3 +57,5 @@ body {
     display: block;
     margin: 0 auto;
 }
+
+

@@ -146,7 +146,7 @@ class Player {
 const player1 = new Player('player1', '/playing-cards-master/back_light.png');
 const player2 = new Player('player2', '/playing-cards-master/back_dark.png');
 
-// Each player draws 2 cards
+// Each player draws 4 cards
 player1.drawCard();
 player1.drawCard();
 player1.drawCard();
@@ -156,7 +156,7 @@ player2.drawCard();
 player2.drawCard();
 player2.drawCard();
 
-// Each player plays a card
+// Each player plays two card
 player1.playCard(0);
 player1.playCard(0);
 player2.playCard(0);
