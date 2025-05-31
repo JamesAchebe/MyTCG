@@ -59,60 +59,96 @@ class Player {
         }
     }
 
-    updateHandUI() {
-        const handElement = document.querySelector(`#${this.id} .hand`);
-        handElement.innerHTML = ''; // Clear existing content
-    
+updateHandUI() {
+    const handElement = document.querySelector(`#${this.id} .hand`);
+    handElement.innerHTML = ''; // Clear current hand display
 
-    // Create and append count element
-        const countDiv = document.createElement('div');
-        countDiv.className = 'hand-count';
-        countDiv.textContent = `Hand: ${this.hand.length} cards`;
-        handElement.appendChild(countDiv);
+    const countDiv = document.createElement('div');
+    countDiv.className = 'hand-count';
+    countDiv.textContent = `Hand: ${this.hand.length} cards`;
+    handElement.appendChild(countDiv);
 
-    // Append each card image
-        this.hand.forEach((card, index) => {
+    this.hand.forEach((card, index) => {
         const img = document.createElement('img');
         img.src = card;
         img.alt = 'Card';
         img.className = 'card-img';
+        img.draggable = true;
 
-        // Debugging: Log index and card info
+        // CLICK — send to board
         img.addEventListener('click', () => {
             console.log(`Card clicked: ${card} at index ${index}`);
-            this.playCard(index);
+            this.playCard(index); // This must call updateHandUI() + updateBoardUI()
         });
-        
+
+        // DRAG — set data
+        img.addEventListener('dragstart', (event) => {
+            console.log(`Dragging card from hand: ${card} at index ${index}`);
+            event.dataTransfer.setData(
+                'application/json',
+                JSON.stringify({ card, index, source: 'hand' })
+            );
+
+            // Prevent ghost image
+            event.dataTransfer.setDragImage(img, 0, 0);
+        });
+
         handElement.appendChild(img);
+    });
+}
+
+
+updateBoardUI() {
+    const boardElement = document.querySelector(`#${this.id} .board`);
+
+    // Add drop handlers ONCE
+    if (!boardElement.dataset.listenersAdded) {
+        boardElement.addEventListener('dragover', (event) => {
+            event.preventDefault(); // Allow drop
         });
+
+        boardElement.addEventListener('drop', (event) => {
+            event.preventDefault();
+
+            try {
+                const data = JSON.parse(event.dataTransfer.getData('application/json'));
+                if (data.source === 'hand') {
+                    console.log(`Dropped card on board: ${data.card} from hand`);
+                    this.playCard(data.index); // Move from hand to board
+                }
+            } catch (err) {
+                console.warn('Invalid drag data:', err);
+            }
+        });
+
+        boardElement.dataset.listenersAdded = 'true';
     }
 
-    updateBoardUI() {
-        const boardElement = document.querySelector(`#${this.id} .board`);
-        boardElement.innerHTML = ''; // Clear existing content
+    // Clear and re-render
+    boardElement.innerHTML = '';
 
-    // Create and append count element
-        const countDiv = document.createElement('div');
-        countDiv.className = 'board-count';
-        countDiv.textContent = `Board: ${this.board.length} cards`;
-        boardElement.appendChild(countDiv);
+    const countDiv = document.createElement('div');
+    countDiv.className = 'board-count';
+    countDiv.textContent = `Board: ${this.board.length} cards`;
+    boardElement.appendChild(countDiv);
 
-    // Append each card image
-        this.board.forEach((card, index) => {
-            const img = document.createElement('img');
-            img.src = card;
-            img.alt = 'Card';
-            img.className = 'card-img';
+    this.board.forEach((card, index) => {
+        const img = document.createElement('img');
+        img.src = card;
+        img.alt = 'Card';
+        img.className = 'card-img';
+        img.draggable = true;
 
-                // Debugging: Log index and card info
-            img.addEventListener('click', () => {
-                console.log(`Card clicked: ${card} at index ${index}`);
-                this.discard(index);
-            });
-
-            boardElement.appendChild(img);
+        img.addEventListener('click', () => {
+            console.log(`Card on board clicked: ${card} at index ${index}`);
+            this.discard(index); // This must call updateBoardUI()
         });
-    }
+
+        boardElement.appendChild(img);
+    });
+}
+
+
 
     updateDeckUI() {
         const deckElement = document.querySelector(`#${this.id} .deck`);
@@ -187,5 +223,3 @@ class Player {
 
 const player1 = new Player('player1', '/playing-cards-master/back_light.png');
 const player2 = new Player('player2', '/playing-cards-master/back_dark.png');
-
-
